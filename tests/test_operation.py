@@ -32,12 +32,13 @@ def test_opsss(voter, steth_gauge, currency,strategy,zapper,strategyProxy,Contra
     whalebefore = currency.balanceOf(whale)
     whale_deposit  = 100 *1e18
     vault.deposit(whale_deposit, {"from": whale})
+    
     strategy.harvest({'from': strategist})
 
     genericStateOfStrat(strategy, currency, vault)
     genericStateOfVault(vault, currency)
 
-    chain.sleep(2592000)
+    chain.sleep(2592000) # Thirty days
     chain.mine(1)
 
     
