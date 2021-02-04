@@ -61,10 +61,6 @@ def test_migrate_live(currency,Strategy, strategyProxy,gov, strategist, voter, y
 
     strategy2 = strategist.deploy(Strategy, vault)
     vault.migrateStrategy(strategy, strategy2, {'from': ychad})
-    print("!!! GOVERNANCE ~~~!!!!")
-    print(strategyProxy.governance())
-    print(strategist)
-    print(gov)
     strategyProxy.setGovernance(gov, {"from": strategist})
     voter.setStrategy(strategyProxy.address ,{"from":ychad})
     strategyProxy.approveStrategy(strategy2,{"from":gov})   # Whitelist our strategy
