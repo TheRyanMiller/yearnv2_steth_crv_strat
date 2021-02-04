@@ -102,7 +102,6 @@ contract StrategyProxy {
         require(strategies[msg.sender], "!strategy");
         uint256 _before = IERC20(crv).balanceOf(address(proxy)); // There may already be a CRV balance. Harvest should exclude this.
         proxy.execute(mintr, 0, abi.encodeWithSignature("mint(address)", _gauge));
-        proxy.execute(_gauge, 0, abi.encodeWithSignature("claim_rewards()"));
         uint256 _after = IERC20(crv).balanceOf(address(proxy));
         uint256 _balance = _after.sub(_before);
         proxy.execute(crv, 0, abi.encodeWithSignature("transfer(address,uint256)", msg.sender, _balance));
@@ -112,13 +111,15 @@ contract StrategyProxy {
         require(strategies[msg.sender], "!strategy");
         uint256 _before = IERC20(crv).balanceOf(address(proxy)); // There may already be a CRV balance. Harvest should exclude this.
         proxy.execute(mintr, 0, abi.encodeWithSignature("mint(address)", _gauge));
-        proxy.execute(_gauge, 0, abi.encodeWithSignature("claim_rewards()"));
+        (bool successful,) = proxy.execute(_gauge, 0, abi.encodeWithSignature("claim_rewards()"));
+        if(!successful){revert();}
         uint256 _after = IERC20(crv).balanceOf(address(proxy));
         uint256 _balance = _after.sub(_before);
         proxy.execute(crv, 0, abi.encodeWithSignature("transfer(address,uint256)", msg.sender, _balance));
         for(uint i=0; i<rewardsTokens.length; i++){
             uint256 rewardsBalance = IERC20(rewardsTokens[i]).balanceOf(address(proxy));
-            proxy.execute(rewardsTokens[i], 0, abi.encodeWithSignature("transfer(address,uint256)", msg.sender, rewardsBalance));
+            (bool success,) = proxy.execute(rewardsTokens[i], 0, abi.encodeWithSignature("transfer(address,uint256)", msg.sender, rewardsBalance));
+            if(!success){revert();}
         }
     }
 

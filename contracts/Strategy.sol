@@ -151,8 +151,7 @@ contract Strategy is BaseStrategy {
         uint256 crvBalance = proxy.balanceOf(gauge);
         if(crvBalance > 0){    
 
-            proxy.harvest(gauge);
-
+            proxy.harvestWithTokens(gauge, rewardsTokens);
             // Get rewards balance
             for(uint i=0; i<rewardsTokens.length; i++) {
                 rewardsBalance[rewardsTokens[i]] = IERC20(address(rewardsTokens[i])).balanceOf(address(this));
