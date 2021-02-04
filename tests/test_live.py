@@ -12,7 +12,7 @@ import brownie
 #           - change in loading (from low to high and high to low)
 #           - strategy operation at different loading levels (anticipated and "extreme")
 
-def test_opsss_lvie(currency,live_strategy, chain,live_vault, whale,gov, samdev,strategist, interface):
+def test_opsss_live(currency,live_strategy, chain,live_vault, whale,gov, samdev,strategist, interface):
     strategy = live_strategy
     vault = live_vault
     strategist = samdev
@@ -50,20 +50,26 @@ def test_opsss_lvie(currency,live_strategy, chain,live_vault, whale,gov, samdev,
   # print("Whale profit: ", (currency.balanceOf(whale) - whalebefore)/1e18)
 
 
-def test_migrate_live(currency,Strategy, ychad, live_strategy,live_vault, chain,samdev, interface):
+def test_migrate_live(currency,Strategy, strategyProxy,gov, strategist, voter, ychad, live_strategy,live_vault, chain,samdev, interface):
     strategy = live_strategy
     vault = live_vault
-    strategist = samdev
-    gov = samdev
 
     #strategy.harvest({'from': strategist})
 
     genericStateOfStrat(strategy, currency, vault)
     genericStateOfVault(vault, currency)
 
-
     strategy2 = strategist.deploy(Strategy, vault)
     vault.migrateStrategy(strategy, strategy2, {'from': ychad})
+    print("!!! GOVERNANCE ~~~!!!!")
+    print(strategyProxy.governance())
+    print(strategist)
+    print(gov)
+    strategyProxy.setGovernance(gov, {"from": strategist})
+    voter.setStrategy(strategyProxy.address ,{"from":ychad})
+    strategyProxy.approveStrategy(strategy2,{"from":gov})   # Whitelist our strategy
+    strategy2.setProxy(strategyProxy, {"from": ychad})        # Must set the new strat up with the proxy
+
     strategy2.harvest({'from': strategist})
     genericStateOfStrat(strategy, currency, vault)
     genericStateOfStrat(strategy2, currency, vault)

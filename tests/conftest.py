@@ -23,8 +23,6 @@ def whale(accounts, web3, currency, chain, ldo):
     #acc = accounts.at('0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8', force=True)
 
     ldo_acc = accounts.at('0x3e40D73EB977Dc6a537aF587D48316feE66E9C8c', force=True)
-
-
     #big binance8 wallet
     acc = accounts.at('0x97960149fc611508748dE01202974d372a677632', force=True)
 
@@ -40,9 +38,6 @@ def samdev(accounts):
     #acc = accounts.at('0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8', force=True)
     #big binance8 wallet
     acc = accounts.at('0xC3D6880fD95E06C816cB030fAc45b3ffe3651Cb0', force=True)
-
-
-    
     yield acc
 
 @pytest.fixture
@@ -101,8 +96,12 @@ def keeper(accounts):
 def live_strategy(Strategy):
     #strategy = Strategy.at('0xCa8C5e51e235EF1018B2488e4e78e9205064D736')
     strategy = Strategy.at('0x997a498E72d4225F0D78540B6ffAbb6cA869edc9')
-
     yield strategy
+
+@pytest.fixture
+def voter(CurveYCRVVoter):
+    voter = CurveYCRVVoter.at('0xF147b8125d2ef93FB6965Db97D6746952a133934')
+    yield voter
 
 @pytest.fixture
 def live_vault(pm):
@@ -111,15 +110,27 @@ def live_vault(pm):
     yield vault
 
 @pytest.fixture
+def steth_gauge(StethGauge):
+    steth_gauge = StethGauge.at('0x182B723a58739a9c974cFDB385ceaDb237453c28')
+    yield steth_gauge
+
+
+@pytest.fixture
 def strategy(strategist, keeper, vault, Strategy):
     strategy = strategist.deploy(Strategy, vault)
     strategy.setKeeper(keeper)
     yield strategy
 
 @pytest.fixture
+def strategyProxy(strategist, StrategyProxy):
+    strategyProxy = strategist.deploy(StrategyProxy)
+    yield strategyProxy
+
+@pytest.fixture
 def zapper(strategist, ZapSteth):
     zapper = strategist.deploy(ZapSteth)
     yield zapper
+
 
 
 @pytest.fixture

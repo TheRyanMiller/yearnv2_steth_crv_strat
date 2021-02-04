@@ -124,8 +124,7 @@ contract ZapSteth is Ownable {
             amount = Math.min(address(this).balance, amount);
             msg.sender.transfer(amount);
         }else{
-
-            IERC20 want = IERC20(token);
+            want = IERC20(token);
             amount = Math.min(want.balanceOf(address(this)), amount);
             want.safeTransfer(msg.sender, amount);
         }
